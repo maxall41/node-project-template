@@ -16,11 +16,11 @@ export default (app: Router) => {
       body: {
         name: Joi.string().required(),
         email: Joi.string().required(),
-        password: Joi.string().required(),
+        paymentAddress: Joi.string().required(),
       },
     }),
     async (req: Request, res: Response, next: NextFunction) => {
-      const logger:Logger = Container.get('logger');
+      const logger: Logger = Container.get('logger');
       try {
         const authServiceInstance = Container.get(AuthService);
         const { user, token } = await authServiceInstance.SignUp(req.body as IUserInputDTO);
@@ -36,20 +36,19 @@ export default (app: Router) => {
     '/signin',
     celebrate({
       body: Joi.object({
-        email: Joi.string()
-    .required(),
-        password: Joi.string().required(),
+        publicAddress: Joi.string().required(),
+        signature: Joi.string().required(),
       }),
     }),
     async (req: Request, res: Response, next: NextFunction) => {
-      const logger:Logger = Container.get('logger');
+      const logger: Logger = Container.get('logger');
       try {
-        const { email, password } = req.body;
+        const { signature, publicAddress } = req.body;
         const authServiceInstance = Container.get(AuthService);
-        const { user, token } = await authServiceInstance.SignIn(email, password);
-        return res.json({ user, token }).status(200);
+        const { userObj, token } = await authServiceInstance.SignIn(signature, publicAddress);
+        return res.json({ userObj, token }).status(200);
       } catch (e) {
-        logger.error('🔥 error: %o',  e );
+        logger.error('🔥 error: %o', e);
         return next(e);
       }
     },
@@ -65,7 +64,7 @@ export default (app: Router) => {
    * It's really annoying to develop that but if you had to, please use Redis as your data store
    */
   route.post('/logout', (req: Request, res: Response, next: NextFunction) => {
-    const logger:Logger = Container.get('logger');
+    const logger: Logger = Container.get('logger');
     logger.debug('Calling Sign-Out endpoint with body: %o', req.body);
     try {
       //@TODO AuthService.Logout(req.user) do some clever stuff

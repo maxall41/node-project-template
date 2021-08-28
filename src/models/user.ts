@@ -9,6 +9,36 @@ const User = new mongoose.Schema(
       index: true,
     },
 
+    walletAddress: String,
+    walletPrivateKey: {
+      version: Number,
+      id: String,
+      address: String,
+      crypto: {
+        ciphertext: String,
+        cipherparams: {
+          iv: String,
+        },
+        cipher: String,
+        kdf: String,
+        kdfparams: {
+          dklen: Number,
+          salt: String,
+          n: Number,
+          r: Number,
+          p: Number,
+        },
+        mac: String,
+      },
+    },
+    paymentAddress: String,
+    walletPrivateKeySalt: String,
+
+    nonce: {
+      type: String,
+      unique: true,
+    },
+
     email: {
       type: String,
       lowercase: true,
@@ -20,10 +50,6 @@ const User = new mongoose.Schema(
       type: String,
       unique: true,
     },
-
-    password: String,
-
-    salt: String,
   },
   { timestamps: true },
 );

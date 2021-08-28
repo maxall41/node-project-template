@@ -23,6 +23,7 @@ export default ({ app }: { app: express.Application }) => {
   // The magic package that prevents frontend developers going nuts
   // Alternate description:
   // Enable Cross Origin Resource Sharing to all origins by default
+  //TODO: Replace with actual domain | THIS IS VERY UNSECURE!!!
   app.use(cors());
 
   // Some sauce that always add since 2014
@@ -72,7 +73,6 @@ export default ({ app }: { app: express.Application }) => {
   });
   // Handle general errors
   app.use((err, req, res, next) => {
-    res.status(err.status || 500);
     res.json({
       errors: {
         message: err.message,

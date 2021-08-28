@@ -1,18 +1,19 @@
 import { Container } from 'typedi';
 import MailerService from '../services/mailer';
 import { Logger } from 'winston';
+import { IUser } from '@/interfaces/IUser';
 
-export default class EmailSequenceJob {
+export default class FollowupWelcomeEmailJob {
   public async handler(job, done): Promise<void> {
     const Logger: Logger = Container.get('logger');
     try {
-      Logger.debug('✌️ Email Sequence Job triggered!');
-      const { email, name }: { [key: string]: string } = job.attrs.data;
+      Logger.debug('✌️ Welcome Feedback Job triggered!');
+      const user: IUser = job.attrs.data.user;
       const mailerServiceInstance = Container.get(MailerService);
-      await mailerServiceInstance.SendWelcomeEmail(email);
+      await mailerServiceInstance.SendFollowUpWelcomeEmail(user);
       done();
     } catch (e) {
-      Logger.error('🔥 Error with Email Sequence Job: %o', e);
+      Logger.error('🔥 Error with Welcome Feedback Job: %o', e);
       done(e);
     }
   }

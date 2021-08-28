@@ -24,11 +24,25 @@ export default async ({ expressApp }) => {
     model: require('../models/user').default,
   };
 
+  const nftModel = {
+    name: 'nftModel',
+    // Notice the require syntax and the '.default'
+    model: require('../models/nft').default,
+  };
+
+  const purchaseModel = {
+    name: 'purchaseModel',
+    // Notice the require syntax and the '.default'
+    model: require('../models/pendingPurchases').default,
+  };
+
   // It returns the agenda instance because it's needed in the subsequent loaders
   const { agenda } = await dependencyInjectorLoader({
     mongoConnection,
     models: [
       userModel,
+      nftModel,
+      purchaseModel,
       // salaryModel,
       // whateverModel
     ],

@@ -1,24 +1,29 @@
 import { Container } from 'typedi';
-import formData from 'form-data';
-import Mailgun from 'mailgun.js';
+const Mailgun = require('mailgun-js');
 import LoggerInstance from './logger';
 import agendaFactory from './agenda';
+import { createAlchemyWeb3 } from '@alch/alchemy-web3';
+const { RelayProvider } = require('@opengsn/provider');
 import config from '../config';
 
-export default ({ mongoConnection, models }: { mongoConnection; models: { name: string; model: any }[] }) => {
+export default async ({ mongoConnection, models }: { mongoConnection; models: { name: string; model: any }[] }) => {
   try {
     models.forEach(m => {
       Container.set(m.name, m.model);
     });
 
+    // Setup mailgun
+    const mailgun = new Mailgun({ apiKey: config.emails.apiKey, domain: config.emails.domain });
+
     const agendaInstance = agendaFactory({ mongoConnection });
-    const mgInstance = new Mailgun(formData);
-
-
+    // Create Web3
+    const web3 = createAlchemyWeb3(config.alchemy_api_key);
+    // Inject
     Container.set('agendaInstance', agendaInstance);
     Container.set('logger', LoggerInstance);
-    Container.set('emailClient', mgInstance.client({ key: config.emails.apiKey, username: config.emails.apiUsername }));
+    Container.set('emailClient', mailgun);
     Container.set('emailDomain', config.emails.domain);
+    Container.set('web3', web3);
 
     LoggerInstance.info('✌️ Agenda injected into container');
 
